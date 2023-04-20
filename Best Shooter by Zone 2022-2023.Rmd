@@ -1,0 +1,107 @@
+---
+title: "Best Shooter by Zone"
+author: "Adam Budd"
+date: "2023-04-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Installing necessary packages
+```{r}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(flextable)
+```
+
+#Loading in shot data
+```{r}
+shotdata <- read.csv("C:/Users/apbud/OneDrive/Desktop/Personal Projects/Best Shooter by Zone/nbashots.csv")
+```
+
+#Creating dataframe of player performance by zone on court
+```{r}
+shotdata <- shotdata %>% filter(SEASON_1 == '2023')
+shotdata$SHOT_MADE[shotdata$SHOT_MADE == 'True'] <- 1
+shotdata <- shotdata %>% group_by(PLAYER_NAME, BASIC_ZONE, ZONE_NAME)
+grouped <- shotdata %>% summarize(Percent = mean(SHOT_MADE), n = n()) %>% filter(n >= 50) %>% arrange(desc(Percent), desc(n)) %>% ungroup() %>% mutate(Makes = Percent * n, Attempts = n) %>% rename('Player' = 'PLAYER_NAME')
+grouped$Percent = round(grouped$Percent * 100, digit = 1)
+head(grouped, 5)
+```
+#Creating tables to show leading shooters for each zone
+```{r}
+leftcorner3 <- grouped %>% filter(BASIC_ZONE == "Left Corner 3") %>% select(-c(BASIC_ZONE, ZONE_NAME, n)) %>% head(5)
+leftcorner3table <- flextable(leftcorner3) %>% set_caption(as_paragraph(as_b('Left Corner 3')))
+leftcorner3table
+```
+```{r}
+abovebreakleft <- grouped %>% filter(BASIC_ZONE == "Above the Break 3", ZONE_NAME == "Left Side Center") %>% select(-c(BASIC_ZONE, ZONE_NAME, n)) %>% head(5)
+abovebreaklefttable <- flextable(abovebreakleft) %>% set_caption(as_paragraph(as_b('Above the Break 3 - Left')))
+abovebreaklefttable
+```
+```{r}
+abovebreakcenter <- grouped %>% filter(BASIC_ZONE == "Above the Break 3", ZONE_NAME == "Center") %>% select(-c(BASIC_ZONE, ZONE_NAME, n)) %>% head(5)
+abovebreakcentertable <- flextable(abovebreakcenter) %>% set_caption(as_paragraph(as_b('Above the Break 3 - Center')))
+abovebreakcentertable
+```
+```{r}
+abovebreakright <- grouped %>% filter(BASIC_ZONE == "Above the Break 3", ZONE_NAME == "Right Side Center") %>% select(-c(BASIC_ZONE, ZONE_NAME, n)) %>% head(5)
+abovebreakrighttable <- flextable(abovebreakright) %>% set_caption(as_paragraph(as_b('Above the Break 3 - Right')))
+abovebreakrighttable
+```
+```{r}
+rightcorner3 <- grouped %>% filter(BASIC_ZONE == "Right Corner 3") %>% select(-c(BASIC_ZONE, ZONE_NAME, n)) %>% head(5)
+rightcorner3table <- flextable(rightcorner3) %>% set_caption(as_paragraph(as_b('Right Corner 3')))
+rightcorner3table
+```
+```{r}
+midrangeleft <- grouped %>% filter(BASIC_ZONE == "Mid-Range", ZONE_NAME == 'Left Side') %>% select(-c(BASIC_ZONE, ZONE_NAME, n)) %>% head(5)
+midrangelefttable <- flextable(midrangeleft) %>% set_caption(as_paragraph(as_b('Mid Range - Left')))
+midrangelefttable
+```
+
+```{r}
+midrangeleftcenter <- grouped %>% filter(BASIC_ZONE == "Mid-Range", ZONE_NAME == 'Left Side Center') %>% select(-c(BASIC_ZONE, ZONE_NAME, n)) %>% head(5)
+midrangeleftcentertable <- flextable(midrangeleftcenter) %>% set_caption(as_paragraph(as_b('Mid Range - Left Center')))
+midrangeleftcentertable
+```
+
+```{r}
+midrangecenter <- grouped %>% filter(BASIC_ZONE == "Mid-Range", ZONE_NAME == 'Center') %>% select(-c(BASIC_ZONE, ZONE_NAME, n)) %>% head(5)
+midrangecentertable <- flextable(midrangecenter) %>% set_caption(as_paragraph(as_b('Mid Range - Center')))
+midrangecentertable
+```
+```{r}
+midrangerightcenter <- grouped %>% filter(BASIC_ZONE == "Mid-Range", ZONE_NAME == 'Right Side Center') %>% select(-c(BASIC_ZONE, ZONE_NAME, n)) %>% head(5)
+midrangerightcentertable <- flextable(midrangerightcenter) %>% set_caption(as_paragraph(as_b('Mid Range - Right Center')))
+midrangerightcentertable
+```
+
+```{r}
+midrangeright <- grouped %>% filter(BASIC_ZONE == "Mid-Range", ZONE_NAME == 'Right Side') %>% select(-c(BASIC_ZONE, ZONE_NAME, n)) %>% head(5)
+midrangerighttable <- flextable(midrangeright) %>% set_caption(as_paragraph(as_b('Mid Range - Right')))
+midrangerighttable
+```
+
+```{r}
+paintnonra <- grouped %>% filter(BASIC_ZONE == "In The Paint (Non-RA)", ZONE_NAME == 'Center') %>% select(-c(BASIC_ZONE, ZONE_NAME, n)) %>% head(5)
+paintnonratable <- flextable(paintnonra) %>% set_caption(as_paragraph(as_b('Paint - Non Restricted Area')))
+paintnonratable
+```
+
+```{r}
+restrictedarea <- grouped %>% filter(BASIC_ZONE == "Restricted Area", ZONE_NAME == 'Center') %>% select(-c(BASIC_ZONE, ZONE_NAME, n)) %>% head(5)
+restrictedareatable <- flextable(restrictedarea) %>% set_caption(as_paragraph(as_b('Restricted Area')))
+restrictedareatable
+```
+
+
+
+
+
+
+
+
